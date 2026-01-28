@@ -2,11 +2,41 @@ use ratatui::{
     layout::Rect,
     style::{Color, Style},
     text::{Line, Span},
-    widgets::{Block, Borders, Paragraph, Wrap},
+    widgets::{Block, Borders, Paragraph},
     Frame,
 };
+use unicode_width::{UnicodeWidthChar, UnicodeWidthStr};
 
 use crate::app::App;
+
+/// Wrap a line of text into multiple lines based on width
+fn wrap_line(line: &str, width: usize) -> Vec<String> {
+    if width == 0 {
+        return vec![String::new()];
+    }
+
+    let mut result = Vec::new();
+    let mut current_line = String::new();
+    let mut current_width = 0;
+
+    for ch in line.chars() {
+        let char_width = ch.width().unwrap_or(0);
+
+        if current_width + char_width > width {
+            // Current line is full, start a new one
+            result.push(current_line.clone());
+            current_line.clear();
+            current_width = 0;
+        }
+
+        current_line.push(ch);
+        current_width += char_width;
+    }
+
+    // Push the last line
+    result.push(current_line);
+    result
+}
 
 /// Render the main terminal area
 pub fn render_terminal(f: &mut Frame, area: Rect, app: &App) {
@@ -18,66 +48,69 @@ pub fn render_terminal(f: &mut Frame, area: Rect, app: &App) {
     let inner_area = block.inner(area);
     f.render_widget(block, area);
 
-    // Calculate how many lines we can show
+    let width = inner_area.width.max(1) as usize;
     let available_height = inner_area.height as usize;
 
-    // Build output lines
-    let mut lines: Vec<Line> = app
-        .output
-        .iter()
-        .map(|line| Line::from(line.as_str()))
-        .collect();
+    // Build visual lines manually
+    let mut visual_lines: Vec<String> = Vec::new();
 
-    // Add current prompt and input
-    let prompt = app.prompt();
-    let input_line = format!("{}{}", prompt, app.input);
-    lines.push(Line::from(input_line.clone()));
-
-    // Calculate scroll
-    let total_lines = lines.len();
-    let scroll = total_lines.saturating_sub(available_height);
-
-    // Take visible lines
-    let visible_lines: Vec<Line> = lines.into_iter().skip(scroll).collect();
-
-    // Calculate how many visual lines we'll actually render (accounting for wrapping)
-    let width = inner_area.width.max(1) as usize;
-    let mut visual_line_count = 0;
-    let mut input_line_visual_start = 0;
-
-    for (i, line) in visible_lines.iter().enumerate() {
-        let line_width = line.width();
-        let wrapped_lines = if line_width == 0 {
-            1
-        } else {
-            (line_width + width - 1) / width
-        };
-
-        // If this is the last line (the input line), remember where it starts
-        if i == visible_lines.len().saturating_sub(1) {
-            input_line_visual_start = visual_line_count;
-        }
-
-        visual_line_count += wrapped_lines;
+    // Add output lines (with wrapping)
+    for line in &app.output {
+        let wrapped = wrap_line(line, width);
+        visual_lines.extend(wrapped);
     }
 
-    let paragraph = Paragraph::new(visible_lines).wrap(Wrap { trim: false });
+    // Save where the input line starts
+    let input_line_start = visual_lines.len();
 
+    // Add current prompt and input (with wrapping)
+    let prompt = app.prompt();
+    let full_input_line = format!("{}{}", prompt, app.input);
+    let wrapped_input = wrap_line(&full_input_line, width);
+    visual_lines.extend(wrapped_input);
+
+    // Calculate scroll to show the bottom
+    let total_visual_lines = visual_lines.len();
+    let scroll = total_visual_lines.saturating_sub(available_height);
+
+    // Take visible lines
+    let visible_lines: Vec<String> = visual_lines
+        .into_iter()
+        .skip(scroll)
+        .collect();
+
+    // Render the visible lines
+    let text = visible_lines.join("\n");
+    let paragraph = Paragraph::new(text);
     f.render_widget(paragraph, inner_area);
 
-    // Position cursor at the input position
-    let cursor_x = inner_area.x + (prompt.len() + app.cursor_pos) as u16;
-    // The input line starts at input_line_visual_start, and we need to add the offset
-    // within that line based on where the cursor is
-    let prompt_and_cursor_len = prompt.len() + app.cursor_pos;
-    let lines_into_input = prompt_and_cursor_len / width;
-    let cursor_y = inner_area.y + (input_line_visual_start + lines_into_input).min(available_height.saturating_sub(1)) as u16;
+    // Calculate cursor position
+    let prompt_width = prompt.width();
+    let input_before_cursor = &app.input[..app.input
+        .char_indices()
+        .nth(app.cursor_pos)
+        .map(|(pos, _)| pos)
+        .unwrap_or(app.input.len())];
+    let cursor_visual_pos = prompt_width + input_before_cursor.width();
 
-    // Make sure cursor is within bounds
-    let cursor_x = cursor_x.min(inner_area.x + inner_area.width - 1);
-    let cursor_y = cursor_y.min(inner_area.y + inner_area.height - 1);
+    // Which wrapped line within the input is the cursor on?
+    let cursor_line_offset = cursor_visual_pos / width;
+    let cursor_x_offset = cursor_visual_pos % width;
 
-    f.set_cursor(cursor_x, cursor_y);
+    // Absolute line number where cursor is
+    let cursor_line_absolute = input_line_start + cursor_line_offset;
+
+    // Relative to visible area
+    let cursor_line_visible = cursor_line_absolute.saturating_sub(scroll);
+
+    // Set cursor position
+    let cursor_x = inner_area.x + cursor_x_offset as u16;
+    let cursor_y = inner_area.y + cursor_line_visible as u16;
+
+    // Ensure cursor is visible
+    if cursor_line_visible < available_height {
+        f.set_cursor(cursor_x, cursor_y);
+    }
 }
 
 /// Render a status bar at the bottom of the terminal
