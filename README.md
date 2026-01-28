@@ -1,4 +1,4 @@
-# Jerm
+# Jerm TUI
 
 [![Rust](https://img.shields.io/badge/rust-1.75%2B-orange.svg)](https://www.rust-lang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -220,12 +220,6 @@ docs: update installation instructions
 ## 📝 License
 
 This project is licensed under the MIT License  
-
-## 🙏 Acknowledgments
-
-- Built with [ratatui](https://github.com/ratatui-org/ratatui) - An amazing TUI library for Rust
-- Inspired by the need for better directory navigation in terminal workflows
-- Thanks to all contributors who help improve Jerm
 
 ## 📬 Contact
 
