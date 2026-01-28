@@ -17,7 +17,8 @@
       "Bash(/Users/joaquin/.cargo/bin/cargo build:*)",
       "Bash(/Users/joaquin/.cargo/bin/cargo test:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(cargo run:*)"
     ]
   }
 }

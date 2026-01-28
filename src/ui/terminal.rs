@@ -39,6 +39,7 @@ pub fn render_terminal(f: &mut Frame, area: Rect, app: &App) {
 
     // Take visible lines
     let visible_lines: Vec<Line> = lines.into_iter().skip(scroll).collect();
+    let num_visible_lines = visible_lines.len();
 
     let paragraph = Paragraph::new(visible_lines).wrap(Wrap { trim: false });
 
@@ -46,7 +47,8 @@ pub fn render_terminal(f: &mut Frame, area: Rect, app: &App) {
 
     // Position cursor at the input position
     let cursor_x = inner_area.x + (prompt.len() + app.cursor_pos) as u16;
-    let cursor_y = inner_area.y + (available_height.saturating_sub(1)) as u16;
+    // The cursor should be on the last visible line, which is (num_visible_lines - 1)
+    let cursor_y = inner_area.y + (num_visible_lines.saturating_sub(1)) as u16;
 
     // Make sure cursor is within bounds
     let cursor_x = cursor_x.min(inner_area.x + inner_area.width - 1);
