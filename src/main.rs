@@ -102,13 +102,6 @@ fn draw_ui(f: &mut ratatui::Frame, app: &mut App) {
 
 fn handle_normal_mode(app: &mut App, code: KeyCode, modifiers: KeyModifiers) {
     match (code, modifiers) {
-        // Cmd+I (Super+I on macOS) - save shortcut
-        // Note: Crossterm reports Cmd as Super on macOS
-        (KeyCode::Char('i'), KeyModifiers::SUPER) => {
-            app.shortcuts.add_shortcut(app.current_dir.clone());
-            app.add_output(&format!("Shortcut saved: {}", app.current_dir.display()));
-        }
-
         // Ctrl+1 through Ctrl+9 - navigate to shortcut
         (KeyCode::Char(c), KeyModifiers::CONTROL) if ('1'..='9').contains(&c) => {
             let index = c.to_digit(10).unwrap() as usize;
@@ -292,6 +285,11 @@ fn execute_input(app: &mut App) {
 
         ParsedCommand::Exit => {
             app.should_quit = true;
+        }
+
+        ParsedCommand::JermSave => {
+            app.shortcuts.add_shortcut(app.current_dir.clone());
+            app.add_output(&format!("Shortcut saved: {}", app.current_dir.display()));
         }
 
         ParsedCommand::Shell(cmd) => match execute_command(&cmd, &app.current_dir) {

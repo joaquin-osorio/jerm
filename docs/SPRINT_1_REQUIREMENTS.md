@@ -66,7 +66,7 @@ The terminal must:
 
 #### Saving Shortcuts
 
-- Keyboard shortcut to save current directory: `Cmd+I`
+- Command to save current directory: `jerm save`
 
 #### Navigation
 
@@ -136,7 +136,7 @@ The following are explicitly **NOT included** in Sprint 1:
 ### Shortcuts
 
 - [ ] Sidebar displays shortcuts
-- [ ] `Cmd+I` saves current directory
+- [ ] `jerm save` saves current directory
 - [ ] Shortcuts ordered by last access
 - [ ] Selecting shortcut navigates to directory
 - [ ] JSON persistence works correctly

@@ -112,15 +112,20 @@ Location: `~/.config/jerm/shortcuts.json`
 
 ## Key Bindings (Sprint 1)
 
-| Context  | Key         | Action                             |
-| -------- | ----------- | ---------------------------------- |
-| Global   | `Cmd+I`     | Save current directory as shortcut |
-| Global   | `Ctrl+1..9` | Navigate to shortcut N             |
-| cd -list | `↑/↓`       | Move selection                     |
-| cd -list | `→`         | Enter directory                    |
-| cd -list | `←`         | Go up one level                    |
-| cd -list | `Enter`     | Confirm navigation                 |
-| cd -list | `Escape`    | Cancel                             |
+| Context  | Key         | Action                 |
+| -------- | ----------- | ---------------------- |
+| Global   | `Ctrl+1..9` | Navigate to shortcut N |
+| cd -list | `↑/↓`       | Move selection         |
+| cd -list | `→`         | Enter directory        |
+| cd -list | `←`         | Go up one level        |
+| cd -list | `Enter`     | Confirm navigation     |
+| cd -list | `Escape`    | Cancel                 |
+
+## Commands (Sprint 1)
+
+| Command     | Action                             |
+| ----------- | ---------------------------------- |
+| `jerm save` | Save current directory as shortcut |
 
 ## Dependencies
 

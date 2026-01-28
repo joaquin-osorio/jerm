@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cargo build:*)",
+      "Bash(source ~/.zshrc)",
+      "Bash(source ~/.bashrc)",
+      "Bash(export PATH=\"$HOME/.cargo/bin:$PATH\")",
+      "Bash(curl:*)",
+      "Bash(sh -s -- -y)",
+      "Bash(. \"$HOME/.cargo/env\")",
+      "Bash(cargo fmt:*)",
+      "Bash(cargo clippy:*)",
+      "Bash(cargo test:*)",
+      "Bash(source \"$HOME/.cargo/env\")",
+      "Bash(/Users/joaquin/.cargo/bin/cargo fmt)",
+      "Bash(/Users/joaquin/.cargo/bin/cargo clippy -- -W clippy::pedantic)",
+      "Bash(/Users/joaquin/.cargo/bin/cargo build:*)",
+      "Bash(/Users/joaquin/.cargo/bin/cargo test:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}

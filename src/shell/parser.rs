@@ -11,6 +11,8 @@ pub enum ParsedCommand {
     Clear,
     /// Exit the terminal
     Exit,
+    /// Save current directory as shortcut
+    JermSave,
     /// Regular shell command to execute
     Shell(String),
 }
@@ -35,6 +37,10 @@ pub fn parse_command(input: &str) -> ParsedCommand {
         },
         "clear" => ParsedCommand::Clear,
         "exit" | "quit" => ParsedCommand::Exit,
+        "jerm" => match args {
+            Some("save") => ParsedCommand::JermSave,
+            _ => ParsedCommand::Shell(trimmed.to_string()),
+        },
         _ => ParsedCommand::Shell(trimmed.to_string()),
     }
 }
@@ -88,6 +94,19 @@ mod tests {
         assert_eq!(
             parse_command("echo hello world"),
             ParsedCommand::Shell("echo hello world".to_string())
+        );
+    }
+
+    #[test]
+    fn test_parse_jerm_save() {
+        assert_eq!(parse_command("jerm save"), ParsedCommand::JermSave);
+    }
+
+    #[test]
+    fn test_parse_jerm_unknown() {
+        assert_eq!(
+            parse_command("jerm unknown"),
+            ParsedCommand::Shell("jerm unknown".to_string())
         );
     }
 }

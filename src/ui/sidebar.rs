@@ -27,7 +27,7 @@ pub fn render_sidebar(f: &mut Frame, area: Rect, shortcuts: &ShortcutManager) {
             ))),
             ListItem::new(Line::from("")),
             ListItem::new(Line::from(Span::styled(
-                "Cmd+I to add",
+                "jerm save to add",
                 Style::default().fg(Color::DarkGray),
             ))),
         ];
