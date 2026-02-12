@@ -2,7 +2,7 @@ use std::path::PathBuf;
 use std::sync::mpsc::{Receiver, Sender};
 use std::time::{Duration, Instant};
 
-use ratatui::style::Style;
+use ratatui::style::{Modifier, Style};
 use ratatui::text::Span;
 
 use crate::git::{spawn_git_worker, GitMessage, GitStatus};
@@ -131,7 +131,10 @@ impl App {
             dir
         };
 
-        spans.push(Span::raw(display_dir));
+        spans.push(Span::styled(
+            display_dir,
+            Style::default().fg(Palette::PROMPT_PATH).add_modifier(Modifier::BOLD),
+        ));
         spans.push(Span::raw(" "));
 
         // Git info

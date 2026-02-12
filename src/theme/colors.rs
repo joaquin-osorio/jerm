@@ -27,6 +27,9 @@ impl Palette {
     /// Highlighted/selected background
     pub const BG_SELECTED: Color = Color::Rgb(45, 65, 85);
 
+    /// Prompt directory path (bright cyan-blue)
+    pub const PROMPT_PATH: Color = Color::Rgb(80, 200, 220);
+
     // ─────────────────────────────────────────────────────────────────────────
     // Syntax Highlighting Colors
     // ─────────────────────────────────────────────────────────────────────────
